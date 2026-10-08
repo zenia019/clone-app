@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>musicXplore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+  <div class="logo">music<span>Xplore</span></div>
+  <div class="navlabel">Browse</div>
+  <div class="navitem active" data-cat="hollywood"><span class="dot"></span>Hollywood</div>
+  <div class="navitem" data-cat="bollywood"><span class="dot"></span>Bollywood</div>
+  <div class="navitem" data-cat="pakistani"><span class="dot"></span>Pakistani Artists</div>
+  <div class="navitem" data-cat="indianpop"><span class="dot"></span>Indian Pop</div>
+  <div class="navitem" data-cat="kpop"><span class="dot"></span>K-Pop</div>
+  <div class="navlabel">You</div>
+  <div class="navitem" data-cat="library"><span class="dot"></span>My Library</div>
+  <div class="navitem" data-cat="mostplayed"><span class="dot"></span>Most Listened</div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <h1 id="pageTitle">Hollywood</h1>
+    <p id="pageSub">Original demo tracks in the spirit of these artists' catalogs</p>
+  </div>
+  <div class="content"><div class="grid" id="grid"></div></div>
+</div>
+
+<div class="player">
+  <div class="p-track">
+    <div class="p-art" id="pArt">—</div>
+    <div class="p-meta">
+      <div class="p-title" id="pTitle">Nothing playing</div>
+      <div class="p-artist" id="pArtist">Pick a track</div>
+    </div>
+    <svg class="heart" id="pHeart" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.5 8 2 4.5 5.6 4c2-.3 3.8.7 4.9 2.3C11.6 4.7 13.4 3.7 15.4 4c3.6.5 5.1 4 3.6 7.7C20.5 16.4 12 21 12 21z"/></svg>
+  </div>
+  <div class="p-center">
+    <div class="controls">
+      <button class="ctrl-btn" id="prevBtn" title="Previous"><svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg></button>
+      <button class="playpause" id="playBtn"><svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+      <button class="ctrl-btn" id="nextBtn" title="Next"><svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg></button>
+    </div>
+    <div class="seekrow">
+      <span class="time" id="curTime">0:00</span>
+      <div class="bar" id="seekBar"><div class="bar-fill" id="seekFill"></div></div>
+      <span class="time r" id="durTime">0:00</span>
+    </div>
+  </div>
+  <div class="p-vol">
+    <svg viewBox="0 0 24 24"><path d="M3 10v4h4l5 5V5L7 10H3z"/></svg>
+    <div class="vol-bar" id="volBar"><div class="vol-fill" id="volFill"></div></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
