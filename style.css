@@ -94,3 +94,28 @@ h1,h2,h3,.logo,.navlabel{font-family:Sora,sans-serif;}
   .topbar{padding:18px 18px 8px;}
   .content{padding:18px 18px 140px;}
 }
+
+/* ---- Home page ---- */
+.grid.home{display:block;}
+.hero{
+  border:1px solid var(--line); border-radius:14px; padding:30px 28px; margin-bottom:26px;
+  background:linear-gradient(120deg,#0f2a1a 0%,#111a12 60%);
+}
+.hero h2{font-size:28px; font-weight:800; letter-spacing:-0.02em;}
+.hero h2 span{color:var(--accent);}
+.hero p{color:var(--text-dim); font-size:14px; margin:8px 0 18px; max-width:460px;}
+.hero-btn{
+  background:var(--accent); color:#06130a; border:none; border-radius:999px;
+  padding:10px 22px; font-family:Sora,sans-serif; font-weight:700; font-size:13.5px; cursor:pointer;
+}
+.hero-btn:hover{background:#5df0a3;}
+.sec-title{font-family:Sora,sans-serif; font-size:18px; font-weight:700; margin:0 0 12px;}
+.tiles{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; margin-bottom:28px;}
+.tile{
+  border:1px solid var(--line); border-radius:10px; padding:16px 14px; cursor:pointer;
+  background:var(--surface); font-family:Sora,sans-serif; font-weight:600; font-size:14px;
+  border-left:3px solid var(--accent); transition:background .15s;
+}
+.tile:hover{background:var(--surface2);}
+.tile small{display:block; font-family:Inter,sans-serif; font-weight:400; color:var(--text-dim); font-size:12px; margin-top:4px;}
+.row{display:grid; grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); gap:16px; margin-bottom:28px;}
