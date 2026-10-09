@@ -186,36 +186,72 @@ function renderHome(grid){
   document.getElementById('shuffleBtn').addEventListener('click',()=>play(ALL_TRACKS[Math.floor(Math.random()*ALL_TRACKS.length)]));
   bindCards(grid);
 }
+function gridOf(tracks){ return `<div class="grid">${tracks.map(cardHTML).join('')}</div>`; }
+function emptyMsg(m){ return `<div class="empty">${m}</div>`; }
+function topPlayed(){ return ALL_TRACKS.filter(t=>counts[t.id]>0).sort((a,b)=>(counts[b.id]||0)-(counts[a.id]||0)); }
+
 function renderGrid(){
-  const grid=document.getElementById('grid');
+  const view=document.getElementById('view');
   const title=document.getElementById('pageTitle'), sub=document.getElementById('pageSub');
-  grid.classList.toggle('home', currentCat==='home');
-  if(currentCat==='home'){
-    title.textContent="Home"; sub.textContent="Welcome back to musicXplore";
-    renderHome(grid); return;
-  }
-  let tracks=[];
-  if(currentCat==='library'){
+  let html='';
+  if(searchQuery){
+    const q=searchQuery.toLowerCase();
+    const res=ALL_TRACKS.filter(t=>(t.t+' '+t.a).toLowerCase().includes(q));
+    title.textContent="Search"; sub.textContent='Results for "'+searchQuery+'"';
+    html=res.length?gridOf(res):emptyMsg('No songs or artists found.');
+  } else if(currentCat==='home'){
+    title.textContent="Home"; sub.textContent="Welcome to musicXplore";
+    const trending=Object.values(DATA).map(c=>c.tracks[0]);
+    const tiles=Object.entries(DATA).map(([k,c])=>{
+      const hue=hashStr(c.label)%360;
+      return `<div class="tile" data-go="${k}" style="background:linear-gradient(135deg,hsl(${hue},50%,26%),hsl(${(hue+40)%360},45%,14%))">${c.label}<span>${c.tracks.length} tracks</span></div>`;
+    }).join('');
+    const top=topPlayed().slice(0,5);
+    html=`<section class="hero"><h2>Explore every sound.</h2>
+      <p>Hollywood hits, Bollywood romance, Pakistani classics, Punjabi pop and K-Pop — all in one place.</p>
+      <button class="hero-btn" id="heroPlay">&#9654; Start listening</button></section>
+      <h3 class="sec">Browse categories</h3><div class="tiles">${tiles}</div>
+      <div class="block"><h3 class="sec">Trending now</h3>${gridOf(trending)}</div>`
+      + (top.length?`<div class="block"><h3 class="sec">Your most listened</h3>${gridOf(top)}</div>`:'');
+  } else if(currentCat==='library'){
     title.textContent="My Library"; sub.textContent="Tracks you've saved";
-    tracks=ALL_TRACKS.filter(t=>library.has(t.id));
+    const t=ALL_TRACKS.filter(t=>library.has(t.id));
+    html=t.length?gridOf(t):emptyMsg('No saved tracks yet — play a track, then tap the heart in the player bar.');
   } else if(currentCat==='mostplayed'){
     title.textContent="Most Listened"; sub.textContent="Your top plays on musicXplore";
-    tracks=ALL_TRACKS.filter(t=>counts[t.id]>0).sort((a,b)=>(counts[b.id]||0)-(counts[a.id]||0));
+    const t=topPlayed();
+    html=t.length?gridOf(t):emptyMsg('Nothing played yet — start listening.');
   } else {
-    const c=DATA[currentCat]; title.textContent=c.label; sub.textContent=c.sub; tracks=c.tracks;
+    const c=DATA[currentCat]; title.textContent=c.label; sub.textContent=c.sub; html=gridOf(c.tracks);
   }
-  if(tracks.length===0){
-    grid.innerHTML=`<div class="empty">${currentCat==='library'?'No saved tracks yet — tap a track, then the heart in the player bar.':currentCat==='mostplayed'?'Nothing played yet — start listening.':'No tracks.'}</div>`;
-    return;
-  }
-  grid.innerHTML=tracks.map(cardHTML).join('');
-  bindCards(grid);
+  view.innerHTML=html;
+  view.querySelectorAll('.card').forEach(card=>{
+    const id=card.dataset.id;
+    card.addEventListener('click',()=>{
+      const tr=byId(id);
+      if(state.current && state.current.id===id){ togglePlay(); renderGrid(); }
+      else { play(tr); }
+    });
+  });
+  const hp=document.getElementById('heroPlay');
+  if(hp) hp.addEventListener('click',()=>play(Object.values(DATA)[0].tracks[0]));
 }
 
+function goTo(cat){
+  currentCat=cat; searchQuery='';
+  document.getElementById('searchInput').value='';
+  document.querySelectorAll('.navitem').forEach(i=>i.classList.toggle('active', i.dataset.cat===cat));
+  renderGrid();
+  document.querySelector('.content').scrollTop=0;
+}
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-go]'); if(el) goTo(el.dataset.go);
+});
 document.querySelectorAll('.navitem').forEach(item=>{
-  item.addEventListener('click',()=>{
-    goTo(item.dataset.cat);
-  });
+  item.addEventListener('click',()=>goTo(item.dataset.cat));
+});
+document.getElementById('searchInput').addEventListener('input',e=>{
+  searchQuery=e.target.value.trim(); renderGrid();
 });
 
 document.getElementById('playBtn').addEventListener('click',()=>{togglePlay(); renderGrid();});
