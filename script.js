@@ -139,7 +139,7 @@ function toggleLibrary(id){
   if(currentCat==='library') renderGrid();
 }
 
-let currentCat='hollywood';
+let currentCat='home';
 function cardHTML(tr){
   const isPlaying = state.current && state.current.id===tr.id && state.playing;
   return `<div class="card${isPlaying?' playing':''}" data-id="${tr.id}">
@@ -152,9 +152,48 @@ function cardHTML(tr){
     <div class="track-artist">${tr.a} · ${fmt(tr.d)}</div>
   </div>`;
 }
+function goTo(cat){
+  document.querySelectorAll('.navitem').forEach(i=>i.classList.toggle('active', i.dataset.cat===cat));
+  currentCat=cat; renderGrid();
+}
+function bindCards(grid){
+  grid.querySelectorAll('.card').forEach(card=>{
+    const id=card.dataset.id;
+    card.addEventListener('click',()=>{
+      const tr=byId(id);
+      if(state.current && state.current.id===id){ togglePlay(); renderGrid(); }
+      else { play(tr); }
+    });
+  });
+}
+function renderHome(grid){
+  const featured=Object.values(DATA).flatMap(c=>c.tracks.slice(0,2));
+  const top=ALL_TRACKS.filter(t=>counts[t.id]>0).sort((a,b)=>(counts[b.id]||0)-(counts[a.id]||0)).slice(0,5);
+  const tiles=Object.entries(DATA).map(([k,c])=>`<div class="tile" data-go="${k}">${c.label}<small>${c.tracks.length} tracks</small></div>`).join('')
+    +`<div class="tile" data-go="library">My Library<small>${library.size} saved</small></div>`;
+  grid.innerHTML=`
+    <div class="hero">
+      <h2>Welcome to music<span>Xplore</span></h2>
+      <p>Explore Hollywood, Bollywood, Pakistani, Indian pop and K-pop — all in one place.</p>
+      <button class="hero-btn" id="shuffleBtn">Shuffle play</button>
+    </div>
+    <div class="sec-title">Browse categories</div>
+    <div class="tiles">${tiles}</div>
+    <div class="sec-title">Featured for you</div>
+    <div class="row">${featured.map(cardHTML).join('')}</div>
+    ${top.length?`<div class="sec-title">Your most listened</div><div class="row">${top.map(cardHTML).join('')}</div>`:''}`;
+  grid.querySelectorAll('[data-go]').forEach(t=>t.addEventListener('click',()=>goTo(t.dataset.go)));
+  document.getElementById('shuffleBtn').addEventListener('click',()=>play(ALL_TRACKS[Math.floor(Math.random()*ALL_TRACKS.length)]));
+  bindCards(grid);
+}
 function renderGrid(){
   const grid=document.getElementById('grid');
   const title=document.getElementById('pageTitle'), sub=document.getElementById('pageSub');
+  grid.classList.toggle('home', currentCat==='home');
+  if(currentCat==='home'){
+    title.textContent="Home"; sub.textContent="Welcome back to musicXplore";
+    renderHome(grid); return;
+  }
   let tracks=[];
   if(currentCat==='library'){
     title.textContent="My Library"; sub.textContent="Tracks you've saved";
@@ -170,22 +209,12 @@ function renderGrid(){
     return;
   }
   grid.innerHTML=tracks.map(cardHTML).join('');
-  grid.querySelectorAll('.card').forEach(card=>{
-    const id=card.dataset.id;
-    card.addEventListener('click',()=>{
-      const tr=byId(id);
-      if(state.current && state.current.id===id){ togglePlay(); renderGrid(); }
-      else { play(tr); }
-    });
-  });
+  bindCards(grid);
 }
 
 document.querySelectorAll('.navitem').forEach(item=>{
   item.addEventListener('click',()=>{
-    document.querySelectorAll('.navitem').forEach(i=>i.classList.remove('active'));
-    item.classList.add('active');
-    currentCat=item.dataset.cat;
-    renderGrid();
+    goTo(item.dataset.cat);
   });
 });
 
